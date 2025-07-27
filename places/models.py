@@ -4,12 +4,13 @@ from django.core.exceptions import ValidationError
 from django.db import models
 import os
 from django.core.files import File
+from tinymce.models import HTMLField
 
 
 class Organizers(models.Model):
     title = models.CharField(verbose_name='Название')
     short_description = models.CharField(verbose_name='Краткое описание', max_length=500)
-    long_description = models.TextField(verbose_name='Описание')
+    long_description = HTMLField(verbose_name='Описание')
     coordinates_lng = models.FloatField(verbose_name='Долгота', null=False, blank=False)
     coordinates_lat = models.FloatField(verbose_name='Широта', null=False, blank=False)
 
