@@ -21,13 +21,12 @@ class Image(models.Model):
     organizer = models.ForeignKey(Organizers, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(verbose_name='Изображение', upload_to='images/', blank=True, null=True)
     url = models.URLField(verbose_name='URL изображения', blank=True, null=True)
+    ordinal_number = models.PositiveIntegerField()
 
     def clean(self):
         super().clean()
         if not self.image and not self.url:
             raise ValidationError("Необходимо указать либо URL изображения, либо загрузить файл")
-        if self.image and self.url:
-            raise ValidationError("Можно указать только один источник изображения - либо URL, либо файл")
 
     def save(self, *args, **kwargs):
         if self.url and not self.image:
@@ -43,6 +42,8 @@ class Image(models.Model):
             )
         super().save(*args, **kwargs)
 
+    class Meta:
+        ordering = ["-ordinal_number"]
 
     def __str__(self):
         return f"Фото {self.organizer}"

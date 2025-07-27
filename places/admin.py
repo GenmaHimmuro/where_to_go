@@ -1,12 +1,14 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from adminsortable2.admin import SortableStackedInline, SortableAdminBase
 
 from places.models import Organizers, Image
 
 
-class ImageInline(admin.TabularInline):
+class ImageInline(SortableStackedInline):
     model = Image
     readonly_fields = ['image_preview', ]
+    extra = 5
 
     def image_preview(self, obj):
         if obj.image:
@@ -18,7 +20,7 @@ class ImageInline(admin.TabularInline):
 
 
 @admin.register(Organizers)
-class EventAdmin(admin.ModelAdmin):
+class EventAdmin(SortableAdminBase, admin.ModelAdmin):
     list_display = ['title', 'id', ]
     search_fields = ['title', ]
     inlines = [
@@ -28,5 +30,6 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ['organizer',]
+    list_display = ['organizer', 'ordinal_number',]
+    list_editable = ['ordinal_number', ]
     search_fields = ['organizer',]
