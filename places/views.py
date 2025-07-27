@@ -1,6 +1,8 @@
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
+
 from places.models import Organizers
 
 
@@ -18,7 +20,7 @@ def start_page(request):
                     "properties": {
                         "title": organizer.title,
                         "placeId": place_id,
-                        "detailsUrl": "https://raw.githubusercontent.com/devmanorg/where-to-go-frontend/master/places/moscow_legends.json"
+                        "detailsUrl": reverse('organizer', args=[organizer.id])
                     }
                 }
         features.append(feature)
