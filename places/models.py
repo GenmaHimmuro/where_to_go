@@ -1,4 +1,8 @@
+from io import BytesIO
+import requests
 from django.db import models
+import os
+from django.core.files import File
 
 
 class Organizers(models.Model):
@@ -14,12 +18,23 @@ class Organizers(models.Model):
 
 class Image(models.Model):
     organizer = models.ForeignKey(Organizers, on_delete=models.CASCADE, related_name='images')
-    url = models.URLField(max_length=500)
-    caption = models.CharField(max_length=200, blank=True)
-    order = models.PositiveIntegerField(default=0, verbose_name='Порядок', editable=False)
+    image = models.ImageField(verbose_name='Изображение', upload_to='images/', blank=True, null=True)
+    url = models.URLField(verbose_name='URL изображения', null=True)
 
-    class Meta:
-        ordering = ['order']
+    def save(self, *args, **kwargs):
+        if self.url and not self.image:
+            response = requests.get(self.url)
+            response.raise_for_status()
+
+            file_name = os.path.basename(self.url.split("?")[0])
+
+            self.image.save(
+                file_name,
+                File(BytesIO(response.content)),
+                save=False
+            )
+        super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"Фото {self.organizer}"
