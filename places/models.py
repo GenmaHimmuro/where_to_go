@@ -2,7 +2,6 @@ from io import BytesIO
 import requests
 from django.core.exceptions import ValidationError
 from django.db import models
-import os
 from django.core.files import File
 from tinymce.models import HTMLField
 
@@ -34,7 +33,7 @@ class Image(models.Model):
             response = requests.get(self.url)
             response.raise_for_status()
 
-            file_name = os.path.basename(self.url.split("?")[0])
+            file_name = self.organizer.title
 
             self.image.save(
                 file_name,

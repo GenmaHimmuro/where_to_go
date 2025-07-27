@@ -10,7 +10,6 @@ def start_page(request):
     organizers = Organizers.objects.all()
     features = []
     for organizer in organizers:
-        place_id =+ 1
         feature = {
                     "type": "Feature",
                     "geometry": {
@@ -19,7 +18,7 @@ def start_page(request):
                     },
                     "properties": {
                         "title": organizer.title,
-                        "placeId": place_id,
+                        "placeId": organizer.id,
                         "detailsUrl": reverse('organizer', args=[organizer.id])
                     }
                 }
@@ -35,8 +34,8 @@ def start_page(request):
 def show_place(request, id):
     organizer = get_object_or_404(Organizers,pk=id)
     images = organizer.images.all()
-
     urls = []
+
     for image in images:
         urls.append(image.image.url)
     place_dict = model_to_dict(organizer, fields=["title", "short_description", "long_description"])
