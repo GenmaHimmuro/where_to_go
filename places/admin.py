@@ -5,6 +5,10 @@ from adminsortable2.admin import SortableStackedInline, SortableAdminBase
 from places.models import Organizers, Image
 
 
+MAX_HEIGHT_IMG = 200
+MAX_WIDTH_IMG = 200
+
+
 class ImageInline(SortableStackedInline):
     model = Image
     readonly_fields = ['image_preview', ]
@@ -13,10 +17,10 @@ class ImageInline(SortableStackedInline):
     def image_preview(self, obj):
         if obj.image:
             return format_html(
-                '<img src="{}" style="max-height: 200px; max-width: 200px;" />',
+                f'<img src="{{}}" style="max-height: {MAX_HEIGHT_IMG}px; max-width: {MAX_WIDTH_IMG}px;" />',
                 obj.image.url
             )
-        return "Нет изображения"
+        return 'Нет изображения'
 
 
 @admin.register(Organizers)
@@ -33,3 +37,4 @@ class ImageAdmin(admin.ModelAdmin):
     list_display = ['organizer', 'ordinal_number',]
     list_editable = ['ordinal_number', ]
     search_fields = ['organizer',]
+    autocomplete_fields = ['organizer', ]

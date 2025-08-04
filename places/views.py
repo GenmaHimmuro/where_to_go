@@ -11,23 +11,23 @@ def start_page(request):
     features = []
     for organizer in organizers:
         feature = {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [organizer.coordinates_lng, organizer.coordinates_lat]
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': [organizer.coordinates_lng, organizer.coordinates_lat]
                     },
-                    "properties": {
-                        "title": organizer.title,
-                        "placeId": organizer.id,
-                        "detailsUrl": reverse('organizer', args=[organizer.id])
+                    'properties': {
+                        'title': organizer.title,
+                        'placeId': organizer.id,
+                        'detailsUrl': reverse('organizer', args=[organizer.id])
                     }
                 }
         features.append(feature)
     context =  {
-        "type": "FeatureCollection",
-        "features": features,
+        'type': 'FeatureCollection',
+        'features': features,
     }
-    data = {"context": context}
+    data = {'context': context}
     return render(request, 'template.html', context=data)
 
 
@@ -38,8 +38,8 @@ def show_place(request, id):
 
     for image in images:
         urls.append(image.image.url)
-    place_dict = model_to_dict(organizer, fields=["title", "short_description", "long_description"])
-    place_dict["coordinates"] = [organizer.coordinates_lng, organizer.coordinates_lat]
-    place_dict["imgs"] = urls
+    place_dict = model_to_dict(organizer, fields=['title', 'short_description', 'long_description'])
+    place_dict['coordinates'] = [organizer.coordinates_lng, organizer.coordinates_lat]
+    place_dict['imgs'] = urls
 
     return JsonResponse(place_dict, safe=False, json_dumps_params={'ensure_ascii': False})
