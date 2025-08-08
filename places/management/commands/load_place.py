@@ -1,9 +1,13 @@
+import sys
+import time
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 import requests
 
 from places.models import Organizers
 
+
+SLEEP_TIME = 90
 
 def add_json_to_db(url):
     response = requests.get(url)
@@ -13,11 +17,21 @@ def add_json_to_db(url):
         title=response_json['title'],
         short_description=response_json['description_short'],
         long_description=response_json['description_long'],
-        defaults={'coordinates_lng': response_json['coordinates']['lng'], 'coordinates_lat': response_json['coordinates']['lat']}
+        defaults={
+            'coordinates_lng': response_json['coordinates']['lng'],
+            'coordinates_lat': response_json['coordinates']['lat']}
     )
     for number_of_image, image_url in enumerate(response_json['imgs'], start=0):
-        image_response = requests.get(image_url)
-        image_response.raise_for_status()
+        try:
+            image_response = requests.get(image_url)
+            image_response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            sys.stderr.write(f'При загрузке изображения произошла ошибка: {image_url}')
+            continue
+        except requests.exceptions.ConnectionError:
+            sys.stderr.write('Произошла ошибка с подключением к сети!')
+            time.sleep(SLEEP_TIME)
+            continue
         organizer.images.create(
             image=ContentFile(image_response.content, f'{organizer.title}_{number_of_image}.jpg'),
             ordinal_number=number_of_image

@@ -32,14 +32,15 @@ def start_page(request):
 
 
 def show_place(request, id):
-    organizer = get_object_or_404(Organizers,pk=id)
+    organizer = get_object_or_404(Organizers.objects.prefetch_related('images'),pk=id)
     images = organizer.images.all()
-    urls = []
+    urls = [image.image.url for image in images]
+    places_info = {
+        'title': organizer.title,
+        'description_short': organizer.short_description,
+        'description_long': organizer.long_description,
+        'coordinates': [organizer.coordinates_lng, organizer.coordinates_lat],
+        'imgs': urls,
+    }
 
-    for image in images:
-        urls.append(image.image.url)
-    place_dict = model_to_dict(organizer, fields=['title', 'short_description', 'long_description'])
-    place_dict['coordinates'] = [organizer.coordinates_lng, organizer.coordinates_lat]
-    place_dict['imgs'] = urls
-
-    return JsonResponse(place_dict, safe=False, json_dumps_params={'ensure_ascii': False})
+    return JsonResponse(places_info, safe=False, json_dumps_params={'ensure_ascii': False})

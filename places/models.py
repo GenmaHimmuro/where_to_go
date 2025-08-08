@@ -3,7 +3,7 @@ from tinymce.models import HTMLField
 
 
 class Organizers(models.Model):
-    title = models.CharField(verbose_name='Название', max_length=100)
+    title = models.CharField(verbose_name='Название', max_length=100, unique=True)
     short_description = models.TextField(verbose_name='Краткое описание', blank=True)
     long_description = HTMLField(verbose_name='Описание', blank=True)
     coordinates_lng = models.FloatField(verbose_name='Долгота')
@@ -13,7 +13,7 @@ class Organizers(models.Model):
 class Image(models.Model):
     organizer = models.ForeignKey(Organizers, on_delete=models.CASCADE, related_name='images', verbose_name='Организатор')
     image = models.ImageField(verbose_name='Изображение', upload_to='images/')
-    ordinal_number = models.PositiveIntegerField(verbose_name='Номер по порядку', blank=True)
+    ordinal_number = models.PositiveIntegerField(verbose_name='Номер по порядку', blank=True, default=0)
 
     class Meta:
         ordering = ['-ordinal_number']
